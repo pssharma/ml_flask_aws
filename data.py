@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from sklearn.pipeline import FeatureUnion
 from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 
 import os
 
@@ -48,9 +50,27 @@ def stratified_split(data):
     return strat_train_set, strat_test_set    
 
 
-def data_pipeline(data):
-    cat_attributes = ["party","state_district"]
-    return MultiColumnLabelEncoder(cat_attributes).fit_transform(data)
+
+
+def get_labels_predictors(train_data):
+    predictors = train_data.drop(["win_probability","forecastdate","special","candidate","incumbent","model","p10_voteshare","p90_voteshare"],axis=1)
+    labels = train_data["win_probability"].copy()
+    cat_attributes = ["party","state_district","state"]
+    return MultiColumnLabelEncoder(cat_attributes).fit_transform(predictors),labels
+           
+
+def fit_model(predictors_prepared,labels):
+    rfRegg = RandomForestRegressor()
+    rfRegg.fit(predictors_prepared,labels)
+    predictions = rfRegg.predict(predictors_prepared)
+    rfRegMse = mean_squared_error(labels,predictions)
+    rfRegRmse = np.sqrt(rfRegMse)
+    print(rfRegRmse)
+    return rfRegg
+
+def predict():
+    
+
 
 
 
