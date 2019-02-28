@@ -5,10 +5,12 @@ from sklearn.pipeline import FeatureUnion
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
-import argparse,json
+import argparse,json,sys,logging
+import tensorflow as tf
 
 import os
 
+logging.basicConfig(filename='app.log', format="%(asctime)s:%(filename)s:%(message)s")
 FLAGS = None
 MAIN_PATH = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.join(MAIN_PATH, "data")
@@ -68,21 +70,21 @@ def fit_model(predictors_prepared,labels):
     predictions = rfRegg.predict(predictors_prepared)
     rfRegMse = mean_squared_error(labels,predictions)
     rfRegRmse = np.sqrt(rfRegMse)
-    print(rfRegRmse)
+    logging.debug("rmse "+str(rfRegRmse))
     return rfRegg
 
-def predict():
+def main(_):
     train_set,test_set = stratified_split(loading_data)
     predictors,labels =get_labels_predictors(train_set)
     f_model = fit_model(predictors,labels)
     json_string = FLAGS.predict_params
-
+    logging.debug(json_string)
     #we get the json string and convert it into pandas data frame
     df_predict = pd.read_json(json_string)
     df_prepared = MultiColumnLabelEncoder(cat_attributes).fit_transform(df_predict)
     df_predict = f_model.predict(df_prepared)
     retJson["win_prob"] = df_predict[0]
-
+    logging.debug(str(retJson["win_prob"]))
     #write this json onto a text file
     with open("text.txt") as f:
         json.dump(retJson, f)
@@ -100,7 +102,7 @@ if __name__ == '__main__':
         """
     ) 
     FLAGS, unparsed = parser.parse_known_args()
-    predict()
+tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)    
 
 
 
