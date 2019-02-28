@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 import argparse,json,sys,logging
 import tensorflow as tf
+import ast
 
 import os
 
@@ -46,13 +47,14 @@ def split_traintest(data):
 
 # while taking a test set we must make sure it is "stratified sampling" by creating a category of voteshare
 def stratified_split(data):
-    split = StratifiedShuffleSplit(n_splits=1, test_size=0.2,random_state=42)
-    data["voteshare_cat"] = np.ceil(data["voteshare"]/10)
-    for train_index, test_index in split.split(data,data["voteshare"]):
+    data["state_district"] = data["state"].map(str)+"_"+data["district"].map(str)
+    split = StratifiedShuffleSplit(n_splits=1, test_size=0.33,random_state=42)
+    #data["voteshare_cat"] = np.ceil(data["voteshare"].astype(float)/10)
+    for train_index, test_index in split.split(data,data["party"].astype(str)):
         strat_train_set = data.loc[train_index]
         strat_test_set = data.loc[test_index]
-    for set in (strat_train_set,strat_test_set):
-        set.drop(["voteshare_cat"], axis=1, inplace=True)    
+    #for set in (strat_train_set,strat_test_set):
+        #set.drop(["voteshare_cat"], axis=1, inplace=True)    
     return strat_train_set, strat_test_set    
 
 
@@ -74,19 +76,19 @@ def fit_model(predictors_prepared,labels):
     return rfRegg
 
 def main(_):
-    train_set,test_set = stratified_split(loading_data)
+    train_set,test_set = stratified_split(loading_data())
     predictors,labels =get_labels_predictors(train_set)
     f_model = fit_model(predictors,labels)
     json_string = FLAGS.predict_params
     logging.debug(json_string)
     #we get the json string and convert it into pandas data frame
-    df_predict = pd.read_json(json_string)
+    df_predict = pd.DataFrame(json.loads(json_string),index=[0])
     df_prepared = MultiColumnLabelEncoder(cat_attributes).fit_transform(df_predict)
     df_predict = f_model.predict(df_prepared)
     retJson["win_prob"] = df_predict[0]
     logging.debug(str(retJson["win_prob"]))
     #write this json onto a text file
-    with open("text.txt") as f:
+    with open("text.txt","w") as f:
         json.dump(retJson, f)
 
 

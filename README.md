@@ -5,6 +5,7 @@ The dataset is obtained from fivethirtyeight (https://github.com/fivethirtyeight
 
 Tech stack: 
 Python Scikit learn ---> model implemetaion
+tensorflow tf.app.run module to run data.py
 Flask ---> server side RESTful engine
 Docker 
 AWS lambda for deployment
