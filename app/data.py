@@ -5,11 +5,15 @@ from sklearn.pipeline import FeatureUnion
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
+import argparse,json
 
 import os
 
+FLAGS = None
 MAIN_PATH = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.join(MAIN_PATH, "data")
+retJson = {}
+cat_attributes = ["party","state_district","state"]
 class MultiColumnLabelEncoder:
     def __init__(self,columns = None):
         self.columns = columns
@@ -55,7 +59,6 @@ def stratified_split(data):
 def get_labels_predictors(train_data):
     predictors = train_data.drop(["win_probability","forecastdate","special","candidate","incumbent","model","p10_voteshare","p90_voteshare"],axis=1)
     labels = train_data["win_probability"].copy()
-    cat_attributes = ["party","state_district","state"]
     return MultiColumnLabelEncoder(cat_attributes).fit_transform(predictors),labels
            
 
@@ -69,6 +72,39 @@ def fit_model(predictors_prepared,labels):
     return rfRegg
 
 def predict():
+    train_set,test_set = stratified_split(loading_data)
+    predictors,labels =get_labels_predictors(train_set)
+    f_model = fit_model(predictors,labels)
+    json_string = FLAGS.predict_params
+
+    #we get the json string and convert it into pandas data frame
+    df_predict = pd.read_json(json_string)
+    df_prepared = MultiColumnLabelEncoder(cat_attributes).fit_transform(df_predict)
+    df_predict = f_model.predict(df_prepared)
+    retJson["win_prob"] = df_predict[0]
+
+    #write this json onto a text file
+    with open("text.txt") as f:
+        json.dump(retJson, f)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--predict_params',
+        type=str,
+        default='',
+        help="""
+        Path to predict the winning probability percentage depending
+        on state, district, votershare and party 
+        """
+    ) 
+    FLAGS, unparsed = parser.parse_known_args()
+    predict()
+
+
+
+
     
 
 
