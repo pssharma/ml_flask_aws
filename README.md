@@ -3,7 +3,7 @@ This project consists of Machine learning algorithm implemented in scikit learn 
 
 The dataset is obtained from fivethirtyeight (https://github.com/fivethirtyeight/data/tree/master/house-forecast-2018)
 
-Tech stack: 
+## Tech stack 
 Python Scikit learn ---> model implemetaion
 Flask ---> server side RESTful engine
 Docker 
@@ -11,4 +11,17 @@ AWS lambda for deployment
 
 Check readme.ipynb jupyter notebook for data exploration process.
 
+## Project Structure
+ml_flask_aws
 
+ ├── ml_flask_aws                  
+    ├── app                    
+         ├── app.py        #flask restful implementation
+         ├── data.py       #logic for ml algorithm
+         ├── readme.ipynb  #data exploration process
+         ├── data          #data files
+         ├── Dockerfile
+         ├── requirements.txt
+    ├── readme
+    ├── docker.yml
+  
