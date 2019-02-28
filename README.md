@@ -13,7 +13,7 @@ Check readme.ipynb jupyter notebook for data exploration process.
 
 ## Project Structure
 ml_flask_aws
-
+ .
  ├── ml_flask_aws                  
     ├── app                    
          ├── app.py        #flask restful implementation
@@ -22,6 +22,6 @@ ml_flask_aws
          ├── data          #data files
          ├── Dockerfile
          ├── requirements.txt
-    ├── readme
+    ├── README.md
     ├── docker.yml
   
