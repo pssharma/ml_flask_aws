@@ -12,16 +12,16 @@ AWS lambda for deployment
 Check readme.ipynb jupyter notebook for data exploration process.
 
 ## Project Structure
-ml_flask_aws
- .
- ├── ml_flask_aws                  
-    ├── app                    
-         ├── app.py        #flask restful implementation
-         ├── data.py       #logic for ml algorithm
-         ├── readme.ipynb  #data exploration process
-         ├── data          #data files
-         ├── Dockerfile
-         ├── requirements.txt
-    ├── README.md
-    ├── docker.yml
+  
+      .
+    ├── ...
+    ├── app                     
+    │   ├── app.py        #flask restful implementation
+    │   ├── data.py       #logic for ml algorithm
+    │   ├── readme.ipynb  #data exploration process
+    │   ├── data          #data files
+    │   
+    └── README.md
+    │   
+    └── docker.yml
   
