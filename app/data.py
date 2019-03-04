@@ -40,7 +40,6 @@ def loading_data(data_path=DATA_PATH):
     return df
 
 
-
 # creating a test set with 20% of data 
 def split_traintest(data):
     return train_test_split(data, test_size = 0.2, random_state=42)
